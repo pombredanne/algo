@@ -61,18 +61,6 @@ func (c *Cache) Capacity() int {
 	return cap(c.queue.links)
 }
 
-// Iterate over the cache in LRU order. Useful for debugging.
-func (c *Cache) Iter(keys chan interface{}, values chan interface{}) {
-	for i := c.queue.tail; i != -1; {
-		n := c.queue.links[i]
-		keys <- n.key
-		values <- n.value
-		i = n.next
-	}
-	close(keys)
-	close(values)
-}
-
 func (c *Cache) insert(key interface{}, value interface{}) {
 	var i int
 	q := &c.queue
