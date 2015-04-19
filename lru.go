@@ -23,24 +23,24 @@
 package lru
 
 // Cache for function Func.
-type LRU struct {
+type Cache struct {
 	Func  func(interface{}) interface{}
 	index map[interface{}]int // index of key in queue
 	queue list
 }
 
 // Create a new LRU cache for function f with the desired capacity.
-func New(f func(interface{}) interface{}, capacity int) *LRU {
+func New(f func(interface{}) interface{}, capacity int) *Cache {
 	if capacity < 1 {
 		panic("capacity < 1")
 	}
-	c := &LRU{Func: f, index: make(map[interface{}]int)}
+	c := &Cache{Func: f, index: make(map[interface{}]int)}
 	c.queue.init(capacity)
 	return c
 }
 
 // Fetch value for key in the cache, calling Func to compute it if necessary.
-func (c *LRU) Get(key interface{}) (value interface{}) {
+func (c *Cache) Get(key interface{}) (value interface{}) {
 	i, stored := c.index[key]
 	if stored {
 		value = c.queue.valueAt(i)
@@ -53,16 +53,16 @@ func (c *LRU) Get(key interface{}) (value interface{}) {
 }
 
 // Number of items currently in the cache.
-func (c *LRU) Len() int {
+func (c *Cache) Len() int {
 	return len(c.queue.links)
 }
 
-func (c *LRU) Capacity() int {
+func (c *Cache) Capacity() int {
 	return cap(c.queue.links)
 }
 
 // Iterate over the cache in LRU order. Useful for debugging.
-func (c *LRU) Iter(keys chan interface{}, values chan interface{}) {
+func (c *Cache) Iter(keys chan interface{}, values chan interface{}) {
 	for i := c.queue.tail; i != -1; {
 		n := c.queue.links[i]
 		keys <- n.key
@@ -73,7 +73,7 @@ func (c *LRU) Iter(keys chan interface{}, values chan interface{}) {
 	close(values)
 }
 
-func (c *LRU) insert(key interface{}, value interface{}) {
+func (c *Cache) insert(key interface{}, value interface{}) {
 	var i int
 	q := &c.queue
 	if q.full() {
