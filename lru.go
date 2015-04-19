@@ -26,7 +26,7 @@ package lru
 type Cache struct {
 	Func  func(interface{}) interface{}
 	index map[interface{}]int // index of key in queue
-	queue list
+	list
 }
 
 // Create a new LRU cache for function f with the desired capacity.
@@ -35,7 +35,7 @@ func New(f func(interface{}) interface{}, capacity int) *Cache {
 		panic("capacity < 1")
 	}
 	c := &Cache{Func: f, index: make(map[interface{}]int)}
-	c.queue.init(capacity)
+	c.init(capacity)
 	return c
 }
 
@@ -43,8 +43,8 @@ func New(f func(interface{}) interface{}, capacity int) *Cache {
 func (c *Cache) Get(key interface{}) (value interface{}) {
 	i, stored := c.index[key]
 	if stored {
-		value = c.queue.valueAt(i)
-		c.queue.moveToFront(i)
+		value = c.valueAt(i)
+		c.moveToFront(i)
 	} else {
 		value = c.Func(key)
 		c.insert(key, value)
@@ -54,32 +54,31 @@ func (c *Cache) Get(key interface{}) (value interface{}) {
 
 // Number of items currently in the cache.
 func (c *Cache) Len() int {
-	return len(c.queue.links)
+	return len(c.links)
 }
 
 func (c *Cache) Capacity() int {
-	return cap(c.queue.links)
+	return cap(c.links)
 }
 
 func (c *Cache) insert(key interface{}, value interface{}) {
 	var i int
-	q := &c.queue
-	if q.full() {
+	if c.full() {
 		// evict least recently used item
 		var k interface{}
-		i, k = q.popTail()
+		i, k = c.popTail()
 		delete(c.index, k)
 	} else {
-		i = q.grow()
+		i = c.grow()
 	}
-	q.putFront(key, value, i)
+	c.putFront(key, value, i)
 	c.index[key] = i
 }
 
 // Doubly linked list containing key/value pairs.
 type list struct {
-	front, tail, empty int
-	links              []link
+	front, tail int
+	links       []link
 }
 
 type link struct {
