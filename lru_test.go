@@ -1,6 +1,10 @@
 package lru
 
-import "testing"
+import (
+	"math/rand"
+	"strconv"
+	"testing"
+)
 
 func TestLRU(t *testing.T) {
 	var ncalls int
@@ -29,4 +33,19 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func BenchmarkStrconv1000(b *testing.B) {
+	b.StopTimer()
+	cache := New(func(x interface{}) interface{} {
+		i := x.(int)
+		return strconv.Itoa(i)
+	}, 1000)
+
+	rng := rand.New(rand.NewSource(42))
+
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		cache.Get(rng.Intn(0xFFFFFFFF))
+	}
 }
