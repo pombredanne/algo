@@ -1,3 +1,7 @@
+// Copyright 2015 Lars Buitinck
+//
+// MIT-licensed. See the file LICENSE for details.
+
 // Package dheap implements double-ended heaps (min-max heaps).
 package dheap
 
