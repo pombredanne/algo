@@ -8,8 +8,9 @@ import "container/heap"
 // Every non-empty heap must be initialized using this function before any of
 // the other functions of this package is used on it.
 func Init(h heap.Interface) {
-	for i := parent(h.Len()); i >= 0; i-- {
-		siftDown(h, i)
+	n := h.Len()
+	for i := parent(n); i >= 0; i-- {
+		siftDown(h, i, n)
 	}
 }
 
@@ -44,15 +45,16 @@ func PopMax(h heap.Interface) interface{} {
 	}
 	h.Swap(i, n-1)
 	x := h.Pop()
-	siftDownMax(h, i)
+	siftDownMax(h, i, n-1)
 	return x
 }
 
 // Removes and returns the minimum element of h.
 func PopMin(h heap.Interface) interface{} {
-	h.Swap(0, h.Len()-1)
+	n := h.Len() - 1
+	h.Swap(0, n)
 	x := h.Pop()
-	siftDownMin(h, 0)
+	siftDownMin(h, 0, n)
 	return x
 }
 
@@ -82,24 +84,26 @@ func parent(i int) int {
 	return (i - 1) >> 1
 }
 
-func siftDown(h heap.Interface, i int) {
+func siftDown(h heap.Interface, i, n int) {
 	if minLevel(i) {
-		siftDownMin(h, i)
+		siftDownMin(h, i, n)
 	} else {
-		siftDownMax(h, i)
+		siftDownMax(h, i, n)
 	}
 }
 
-func siftDownMax(h heap.Interface, i int) {
-	if hasChild(i, h.Len()) {
-		m := maxTwoGen(h, i)
+// TODO implement iterative versions, described at:
+// http://www.diku.dk/forskning/performance-engineering/Jesper/heaplab/heapsurvey_html/node11.html
+func siftDownMax(h heap.Interface, i, n int) {
+	if hasChild(i, n) {
+		m := maxTwoGen(h, i, n)
 		if m > i*2+2 { // must be a grandchild
 			if h.Less(i, m) {
 				h.Swap(i, m)
 				if h.Less(m, parent(m)) {
 					h.Swap(m, parent(m))
 				}
-				siftDownMax(h, m)
+				siftDownMax(h, m, n)
 			}
 		} else if h.Less(i, m) {
 			h.Swap(i, m)
@@ -107,16 +111,16 @@ func siftDownMax(h heap.Interface, i int) {
 	}
 }
 
-func siftDownMin(h heap.Interface, i int) {
-	if hasChild(i, h.Len()) {
-		m := minTwoGen(h, i)
+func siftDownMin(h heap.Interface, i, n int) {
+	if hasChild(i, n) {
+		m := minTwoGen(h, i, n)
 		if m > i*2+2 { // must be a grandchild
 			if h.Less(m, i) {
 				h.Swap(i, m)
 				if h.Less(parent(m), m) {
 					h.Swap(m, parent(m))
 				}
-				siftDownMin(h, m)
+				siftDownMin(h, m, n)
 			}
 		} else if h.Less(m, i) {
 			h.Swap(i, m)
@@ -126,10 +130,9 @@ func siftDownMin(h heap.Interface, i int) {
 
 // Index of maximum of children and grandchildren (if any) of i.
 // Precondition: i has at least one child.
-func maxTwoGen(h heap.Interface, i int) int {
+func maxTwoGen(h heap.Interface, i, n int) int {
 	c1, c2 := i*2+1, i*2+2
 	m := c1
-	n := h.Len()
 	for _, k := range []int{c2, c1*2 + 1, c1*2 + 2, c2*2 + 1, c2*2 + 2} {
 		if k >= n {
 			break
@@ -143,10 +146,9 @@ func maxTwoGen(h heap.Interface, i int) int {
 
 // Index of minimum of children and grandchildren (if any) of i.
 // Precondition: i has at least one child.
-func minTwoGen(h heap.Interface, i int) int {
+func minTwoGen(h heap.Interface, i, n int) int {
 	c1, c2 := i*2+1, i*2+2
 	m := c1
-	n := h.Len()
 	for _, k := range []int{c2, c1*2 + 1, c1*2 + 2, c2*2 + 1, c2*2 + 2} {
 		if k >= n {
 			break

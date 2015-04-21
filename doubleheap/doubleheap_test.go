@@ -63,3 +63,22 @@ func TestPush(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkHeap(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var h ints
+		for j := 0; j < 2000; j++ {
+			Push(&h, j%99)
+		}
+		for j := 0; j < 10000; j++ {
+			switch j % 5 {
+			case 2:
+				PopMax(&h)
+			case 4:
+				PopMin(&h)
+			default:
+				Push(&h, j%98)
+			}
+		}
+	}
+}
