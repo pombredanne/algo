@@ -1,5 +1,5 @@
-// Package doubleheap implements double-ended heaps (min-max heaps).
-package doubleheap
+// Package dheap implements double-ended heaps (min-max heaps).
+package dheap
 
 import "container/heap"
 

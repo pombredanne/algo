@@ -1,4 +1,4 @@
-package doubleheap
+package dheap
 
 import (
 	"math/rand"
