@@ -10,6 +10,12 @@ func TestDisjsets(t *testing.T) {
 	f := New(n)
 	nsets := n
 
+	for i := 0; i < n; i++ {
+		if f.Find(i) != i {
+			t.Fatalf("Find(%d) != %d", i, i)
+		}
+	}
+
 	union := func(a, b int, expect bool) {
 		if f.Union(a, b) != expect {
 			t.Errorf("expected %v, got %v", expect, !expect)
