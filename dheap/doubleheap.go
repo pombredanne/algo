@@ -96,9 +96,23 @@ func siftDown(h heap.Interface, i, n int) {
 	}
 }
 
-// TODO implement iterative versions, described at:
+// Iterative version after Bojesen, "Heap implementations and variations",
 // http://www.diku.dk/forskning/performance-engineering/Jesper/heaplab/heapsurvey_html/node11.html
 func siftDownMax(h heap.Interface, i, n int) {
+	for (i*2+2)*2+2 < n { // has four grandchildren
+		m := maxGrandchild(h, i, n)
+		if h.Less(m, i) {
+			return
+		}
+		h.Swap(i, m)
+		if h.Less(m, parent(m)) {
+			h.Swap(m, parent(m))
+		}
+		i = m
+	}
+
+	// XXX Following is from the original paper; couldn't get Bojesen's version
+	// to work.
 	if hasChild(i, n) {
 		m := maxTwoGen(h, i, n)
 		if m > i*2+2 { // must be a grandchild
@@ -116,6 +130,18 @@ func siftDownMax(h heap.Interface, i, n int) {
 }
 
 func siftDownMin(h heap.Interface, i, n int) {
+	for (i*2+2)*2+2 < n { // has four grandchildren
+		m := minGrandchild(h, i, n)
+		if h.Less(i, m) {
+			return
+		}
+		h.Swap(i, m)
+		if h.Less(parent(m), m) {
+			h.Swap(m, parent(m))
+		}
+		i = m
+	}
+
 	if hasChild(i, n) {
 		m := minTwoGen(h, i, n)
 		if m > i*2+2 { // must be a grandchild
@@ -130,6 +156,28 @@ func siftDownMin(h heap.Interface, i, n int) {
 			h.Swap(i, m)
 		}
 	}
+}
+
+func maxGrandchild(h heap.Interface, i, n int) int {
+	cg := (i*2+1)*2+1
+	m := cg
+	for i := 1; i <= 3; i++ {
+		if h.Less(m, cg+i) {
+			m = cg+i
+		}
+	}
+	return m
+}
+
+func minGrandchild(h heap.Interface, i, n int) int {
+	cg := (i*2+1)*2+1
+	m := cg
+	for i := 1; i <= 3; i++ {
+		if h.Less(cg+i, m) {
+			m = cg+i
+		}
+	}
+	return m
 }
 
 // Index of maximum of children and grandchildren (if any) of i.

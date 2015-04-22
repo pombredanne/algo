@@ -45,7 +45,7 @@ func TestPush(t *testing.T) {
 	h := ints{0}
 	min, max := 0, 0
 
-	for _, x := range []int{7, 14, 15, -1, 2, 2, -2, 100} {
+	for _, x := range []int{7, 14, 15, -1, 2, 2, -2, 100, 11, 11} {
 		Push(&h, x)
 		if x > max {
 			max = x
