@@ -13,34 +13,45 @@ type set struct {
 
 // A disjoint-set forest. Sets are represented as integer indices in the
 // range [0, n) where n in the number of elements in the set.
-//
-// This is a reference type.
-type Forest []set
+type Forest struct {
+	sets  []set
+	nsets int
+}
 
 // Construct a new disjoint-set forest of n elements in n singleton sets.
-func New(n int) Forest {
-	forest := Forest(make([]set, n))
-	for i := range forest {
-		forest[i].parent = i
-		forest[i].rank = 0
+func New(n int) *Forest {
+	sets := make([]set, n)
+	for i := range sets {
+		sets[i].parent = i
+		sets[i].rank = 0
 	}
-	return forest
+	return &Forest{sets, n}
 }
 
 // Find the representative of the set that x belongs to.
 //
 // Note: this function may modify the forest.
-func (forest Forest) Find(x int) int {
-	n := &forest[x]
+func (forest *Forest) Find(x int) int {
+	n := &forest.sets[x]
 	if n.parent != x {
 		n.parent = forest.Find(n.parent)
 	}
 	return n.parent
 }
 
+// Reports the number of elements in the forest.
+func (forest *Forest) Len() int {
+	return len(forest.sets)
+}
+
+// Reports the number of disjoint sets in the forest.
+func (forest *Forest) NSets() int {
+	return forest.nsets
+}
+
 // Merge the sets that x and y belong to. Returns true if a merger occurred,
 // false if x and y were already in the same set.
-func (forest Forest) Union(x, y int) bool {
+func (forest *Forest) Union(x, y int) bool {
 	xrootidx := forest.Find(x)
 	yrootidx := forest.Find(y)
 
@@ -48,8 +59,8 @@ func (forest Forest) Union(x, y int) bool {
 		return false
 	}
 
-	xroot := &forest[xrootidx]
-	yroot := &forest[yrootidx]
+	xroot := &forest.sets[xrootidx]
+	yroot := &forest.sets[yrootidx]
 
 	if xroot.rank < yroot.rank {
 		xroot.parent = yrootidx
@@ -59,5 +70,6 @@ func (forest Forest) Union(x, y int) bool {
 		yroot.parent = xrootidx
 		xroot.rank++
 	}
+	forest.nsets--
 	return true
 }
