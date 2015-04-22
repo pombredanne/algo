@@ -1,3 +1,7 @@
+// Copyright 2013–2015 Lars Buitinck
+//
+// MIT-licensed. See the file LICENSE for details.
+
 package rand
 
 import "math/rand"
