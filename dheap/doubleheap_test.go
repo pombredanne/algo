@@ -33,10 +33,14 @@ func TestPop(t *testing.T) {
 		}
 	}
 
-	perm = makePerm(13)
-	for i := 0; i < 13; i++ {
-		if max := PopMax(&perm); max != 13-i-1 {
-			t.Errorf("expected %d, got %d", 13-i-1, max)
+	perm = makePerm(15)
+	for i := 0; i < 15; i++ {
+		atMaxind := perm[MaxInd(&perm)]
+		if max := PopMax(&perm); max != 15-i-1 {
+			t.Errorf("expected %d, got %d", 15-i-1, max)
+			if max != atMaxind {
+				t.Errorf("expected %d at MaxInd, found %d", 15-i-1, atMaxind)
+			}
 		}
 	}
 }
