@@ -159,22 +159,22 @@ func siftDownMin(h heap.Interface, i, n int) {
 }
 
 func maxGrandchild(h heap.Interface, i, n int) int {
-	cg := (i*2+1)*2+1
+	cg := (i*2+1)*2 + 1
 	m := cg
 	for i := 1; i <= 3; i++ {
 		if h.Less(m, cg+i) {
-			m = cg+i
+			m = cg + i
 		}
 	}
 	return m
 }
 
 func minGrandchild(h heap.Interface, i, n int) int {
-	cg := (i*2+1)*2+1
+	cg := (i*2+1)*2 + 1
 	m := cg
 	for i := 1; i <= 3; i++ {
 		if h.Less(cg+i, m) {
-			m = cg+i
+			m = cg + i
 		}
 	}
 	return m
