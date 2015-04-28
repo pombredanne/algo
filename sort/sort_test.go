@@ -21,17 +21,21 @@ func TestPartial(t *testing.T) {
 
 func BenchmarkPartial(b *testing.B) {
 	b.StopTimer()
-	a := sort.StringSlice(randomStrings(10000))
+	data := sort.StringSlice(randomStrings(10000))
 
-	b.StartTimer()
 	for i := 0; i < b.N; i++ {
+		a := make(sort.StringSlice, len(data))
+		copy(a, data)
+
+		b.StartTimer()
 		Partial(a, 100)
 		//sort.Strings(a)
+		b.StopTimer()
 	}
-	b.StopTimer()
 
-	if !sort.IsSorted(a[:100]) {
-		b.Fatal("not sorted: %v", a[:100])
+	Partial(data, 100)
+	if !sort.IsSorted(data[:100]) {
+		b.Fatal("not sorted: %v", data[:100])
 	}
 }
 

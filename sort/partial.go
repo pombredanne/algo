@@ -16,17 +16,29 @@ func Partial(data sort.Interface, k int) {
 
 // Partial quicksort algorithm due to Martínez (2004),
 // http://www.cs.upc.edu/~conrado/research/reports/ALCOMFT-TR-03-50.pdf
-func partialSort(data sort.Interface, k, i, j int) {
-	for j-i > 2 {
-		p := medianOfThree(data, i, j)
-		p = partition(data, i, j, p)
+func partialSort(data sort.Interface, k, lo, hi int) {
+	for hi-lo > 5 {
+		p := medianOfThree(data, lo, hi)
+		p = partition(data, lo, hi, p)
 		if p < k-1 {
-			partialSort(data, k, p+1, j)
+			partialSort(data, k, p+1, hi)
 		}
-		j = p
+		hi = p
 	}
-	if j-i == 2 && data.Less(i+1, i) {
-		data.Swap(i, i+1)
+
+	// Finish off with a selection sort.
+	if hi-lo-1 < k {
+		k = hi - lo - 1
+	}
+	for ; k > 0; k-- {
+		min := lo
+		for i := lo + 1; i < hi; i++ {
+			if data.Less(i, min) {
+				min = i
+			}
+		}
+		data.Swap(lo, min)
+		lo++
 	}
 }
 
