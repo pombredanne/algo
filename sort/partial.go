@@ -14,6 +14,29 @@ func Partial(data sort.Interface, k int) {
 	partialSort(data, k, 0, data.Len())
 }
 
+// Re-order data so that the k'th smallest element is at position k.
+func Select(data sort.Interface, k int) {
+	quickselect(data, k, 0, data.Len())
+}
+
+// TODO: implement introsort.
+func quickselect(data sort.Interface, k, i, j int) {
+	for j-i > 2 {
+		p := medianOfThree(data, i, j)
+		p = partition(data, i, j, p)
+		if k == p {
+			return
+		} else if k < p {
+			j = p
+		} else {
+			i = p + 1
+		}
+	}
+	if j-i == 2 && data.Less(i+1, i) {
+		data.Swap(i, i+1)
+	}
+}
+
 // Partial quicksort algorithm due to Martínez (2004),
 // http://www.cs.upc.edu/~conrado/research/reports/ALCOMFT-TR-03-50.pdf
 func partialSort(data sort.Interface, k, lo, hi int) {

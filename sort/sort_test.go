@@ -39,6 +39,16 @@ func BenchmarkPartial(b *testing.B) {
 	}
 }
 
+func TestSelect(t *testing.T) {
+	a := sort.IntSlice{0, 5, 4, 1, 2, 9, 3, 8, 6, 7}
+	for _, k := range []int{6, 9, 1, 0} {
+		Select(a, k)
+		if a[k] != k {
+			t.Errorf("expected %d, got %d", k, a[k])
+		}
+	}
+}
+
 func TestStrings(t *testing.T) {
 	data := randomStrings(114)
 	Strings(data)
