@@ -8,8 +8,10 @@ import (
 )
 
 func TestPartial(t *testing.T) {
-	a := sort.IntSlice{0, 5, 4, 1, 2, 9, 3, 8, 6, 7}
-	for _, k := range []int{1, 3, 5, 10} {
+	r := rand.New(rand.NewSource(42))
+	a := sort.IntSlice{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	for k := range a {
+		shuffle(a, r)
 		Partial(a, k)
 		for i := 0; i < k; i++ {
 			if a[i] != i {
@@ -40,12 +42,43 @@ func BenchmarkPartial(b *testing.B) {
 }
 
 func TestSelect(t *testing.T) {
-	a := sort.IntSlice{0, 5, 4, 1, 2, 9, 3, 8, 6, 7}
-	for _, k := range []int{6, 9, 1, 0} {
+	r := rand.New(rand.NewSource(42))
+	a := sort.IntSlice{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+	for k := range a {
+		shuffle(a, r)
 		Select(a, k)
 		if a[k] != k {
 			t.Errorf("expected %d, got %d", k, a[k])
 		}
+
+		// Test partitioning around the k'th smallest element.
+		sort.Sort(a[:k])
+		sort.Sort(a[k+1:])
+		if !sort.IsSorted(a) {
+			t.Error("data not correctly partitioned")
+		}
+	}
+}
+
+func BenchmarkSelect(b *testing.B) {
+	b.StopTimer()
+	a := make(sort.Float64Slice, 100000)
+	for i := range a {
+		a[i] = float64(i)
+	}
+	r := rand.New(rand.NewSource(42))
+
+	for i := 0; i < b.N; i++ {
+		shuffle(a, r)
+		b.StartTimer()
+		for _, k := range []int{5, 166, 900, 126, 0} {
+			Select(a, k)
+			//Partial(a, k+1)
+			if a[k] != float64(k) {
+				b.Fatalf("expected %d, got %f", k, a[k])
+			}
+		}
+		b.StopTimer()
 	}
 }
 

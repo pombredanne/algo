@@ -14,12 +14,16 @@ func Partial(data sort.Interface, k int) {
 	partialSort(data, k, 0, data.Len())
 }
 
-// Re-order data so that the k'th smallest element is at position k.
+// Partition data so that the k'th smallest element is at position k,
+// the first k are smaller than the k'th smallest and the rest are larger
+// than it.
+//
+// Average time complexity O(n).
 func Select(data sort.Interface, k int) {
 	quickselect(data, k, 0, data.Len())
 }
 
-// TODO: implement introsort.
+// TODO: implement introselect.
 func quickselect(data sort.Interface, k, i, j int) {
 	for j-i > 2 {
 		p := medianOfThree(data, i, j)
