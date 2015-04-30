@@ -2,8 +2,7 @@
 //
 // MIT-licensed. See the file LICENSE for details.
 
-// Disjoint-set forest (union-find structure) with path compression and
-// union-by-rank in Go.
+// Package disjsets implements disjoint-set forests (union-find structures).
 package disjsets
 
 type set struct {
