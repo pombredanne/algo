@@ -19,6 +19,9 @@ func (avg *Mean) Add(x float64) {
 	avg.sum.Add((x - avg.sum.Sum) / float64(avg.n))
 }
 
+// Returns the mean of the values seen by Add.
+//
+// The mean of zero values is undefined; requesting it may cause a panic.
 func (avg *Mean) Value() float64 {
 	return avg.sum.Sum
 }
@@ -61,6 +64,7 @@ func (v *Variance) AddW(x, w float64) {
 	v.wsum = wsum
 }
 
+// Reports the variance of the values seen by Add and AddW.
 func (v *Variance) Value() float64 {
 	if v.nobs == 1 {
 		return 0
