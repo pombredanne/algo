@@ -1,3 +1,8 @@
+// Copyright 2015 Lars Buitinck
+//
+// MIT-licensed. See the file LICENSE for details.
+
+// Graph search and traversal.
 package traverse
 
 import "github.com/larsmans/algo/graph"
@@ -103,16 +108,17 @@ func IterativeDeepening(g graph.Directed, callback func(from, to int) error,
 				if calledV {
 					called = true
 				}
-			}
-			if err != nil {
-				break
+				if err != nil {
+					break
+				}
 			}
 		}
 		return
 	}
 
 	for depth := 0; ; depth++ {
-		morenodes, err := depthLimDF(start, depth)
+		var morenodes bool
+		morenodes, err = depthLimDF(start, depth)
 		if !morenodes || err != nil {
 			break
 		}

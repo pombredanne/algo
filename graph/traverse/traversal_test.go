@@ -1,6 +1,7 @@
 package traverse
 
 import (
+	"errors"
 	"github.com/larsmans/algo/graph"
 	"reflect"
 	"sort"
@@ -16,7 +17,7 @@ func (g adjacencyList) Neighbors(u int) []int {
 func TestUnweighted(t *testing.T) {
 	g := adjacencyList([][]int{
 		{1, 4}, {2, 5, 0}, {3}, {1, 3}, {4}, {2, 5},
-		{7}, // would cause out-of-bounds if visited
+		{7}, // would cause out-of-bounds panic if visited, but it never is
 	})
 
 	var vset map[int]bool
@@ -48,6 +49,23 @@ func TestUnweighted(t *testing.T) {
 		sort.Ints(vs)
 		if !reflect.DeepEqual(vs, expected) {
 			t.Errorf("set of visited nodes = %v, expected %v", vs, expected)
+		}
+	}
+
+	// Test BFS order.
+	expected = []int{1, 4, 2, 5, 3}
+	for _, traversal := range []typ{bfs, IterativeDeepening} {
+		vs := make([]int, 0)
+		err := traversal(g, func(from, to int) error {
+			vs = append(vs, to)
+			if to == 3 {
+				return errors.New("found it!")
+			}
+			return nil
+		}, 0)
+
+		if err == nil || err.Error() != "found it!" {
+			t.Errorf("unexpected error value %v", err)
 		}
 	}
 }
