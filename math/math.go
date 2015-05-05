@@ -8,5 +8,5 @@ func LogAddExp(a, b float64) float64 {
 	if b > a {
 		a, b = b, a
 	}
-	return a + math.Log1p(math.Exp(b - a))
+	return a + math.Log1p(math.Exp(b-a))
 }

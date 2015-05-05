@@ -6,6 +6,7 @@ package prime
 
 // 32-bit prime sieve: generates all primes less than (1<<32).
 type Sieve32 struct {
+	// Maps composite numbers to one of their factors.
 	factors map[uint64]uint64
 	next    uint64
 }

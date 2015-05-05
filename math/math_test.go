@@ -11,5 +11,5 @@ func TestLogAddExp(t *testing.T) {
 		t.Errorf("expected exactly 1e-10, got %g", x)
 	}
 	t.Logf("naïve version returns %g",
-		math.Log(math.Exp(1e-10) + math.Exp(math.Inf(-1))))
+		math.Log(math.Exp(1e-10)+math.Exp(math.Inf(-1))))
 }
