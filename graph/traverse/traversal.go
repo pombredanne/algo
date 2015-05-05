@@ -74,3 +74,48 @@ func DepthFirst(g graph.Directed, callback func(from, to int) error,
 	}
 	return nil
 }
+
+// Traverses g in breadth-first order, starting at the given start node and
+// calling callback for each vertex.
+//
+// Compared to BreadthFirst, this function uses less memory but may take more
+// time. It also supports only a single start node.
+func IterativeDeepening(g graph.Directed, callback func(from, to int) error,
+	start int) (err error) {
+
+	closed := map[int]bool{start: true}
+
+	// Reports whether the callback got called during traversal (so we've seen
+	// a new part of the graph), and if so, what it returned.
+	var depthLimDF func(int, int) (bool, error)
+	depthLimDF = func(u, depth int) (called bool, err error) {
+		for _, v := range g.Neighbors(u) {
+			if depth == 0 && !closed[v] {
+				if err = callback(u, v); err != nil {
+					return true, err
+				}
+				called = true
+				closed[v] = true
+			}
+			if depth > 0 {
+				var calledV bool
+				calledV, err = depthLimDF(v, depth-1)
+				if calledV {
+					called = true
+				}
+			}
+			if err != nil {
+				break
+			}
+		}
+		return
+	}
+
+	for depth := 0; ; depth++ {
+		morenodes, err := depthLimDF(start, depth)
+		if !morenodes || err != nil {
+			break
+		}
+	}
+	return
+}

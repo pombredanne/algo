@@ -37,7 +37,7 @@ func TestUnweighted(t *testing.T) {
 	}
 
 	expected := []int{1, 2, 3, 4, 5}
-	for _, traversal := range []typ{bfs, dfs} {
+	for _, traversal := range []typ{bfs, dfs, IterativeDeepening} {
 		vset = make(map[int]bool)
 		traversal(g, callback, 0)
 
