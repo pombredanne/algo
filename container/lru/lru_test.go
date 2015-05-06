@@ -1,6 +1,7 @@
-package lru
+package lru_test
 
 import (
+	"github.com/larsmans/algo/container/lru"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -13,7 +14,7 @@ func TestLRU(t *testing.T) {
 		return key
 	}
 
-	cache := New(makeobj, 3)
+	cache := lru.New(makeobj, 3)
 	for i, k := range []int{1, 2, 3, 1, 2, 4, 5, 4, 4, 1} {
 		if cache.Len() != min(i, 3) {
 			t.Errorf("expected cache Len() of %d, got %d",
@@ -37,7 +38,7 @@ func min(a, b int) int {
 
 func BenchmarkStrconv1000(b *testing.B) {
 	b.StopTimer()
-	cache := New(func(x interface{}) interface{} {
+	cache := lru.New(func(x interface{}) interface{} {
 		i := x.(int)
 		return strconv.Itoa(i)
 	}, 1000)
