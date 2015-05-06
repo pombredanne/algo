@@ -10,3 +10,11 @@ type Directed interface {
 	// modify the returned slice.
 	Neighbors(u int) []int
 }
+
+// Interface for directed graphs of finite/known size.
+type FiniteDirected interface {
+	Directed
+
+	// The number of vertices in the graph.
+	NVertices() int
+}
