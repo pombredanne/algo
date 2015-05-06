@@ -3,6 +3,7 @@
 // MIT-licensed. See the file LICENSE for details.
 
 // Graph search and traversal.
+// The API of this package is likely to change in the near future.
 package traverse
 
 import "github.com/larsmans/algo/graph"
