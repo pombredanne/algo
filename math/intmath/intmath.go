@@ -7,7 +7,7 @@ package intmath
 
 // Integer base-2 logarithm: floor(log2(v)).
 //
-// Log2(0) == -1.
+// Returns -1 for negative n.
 func Log2(v int) int {
 	r := -1
 	for v > 0 {
