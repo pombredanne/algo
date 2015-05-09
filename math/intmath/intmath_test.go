@@ -25,6 +25,9 @@ func TestPopcount(t *testing.T) {
 		if got := Popcount32(c.n); got != c.pop {
 			t.Errorf("expected %d, got %d", c.pop, got)
 		}
+		if got := Popcount64(uint64(c.n)); got != c.pop {
+			t.Errorf("expected %d, got %d", c.pop, got)
+		}
 	}
 }
 

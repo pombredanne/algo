@@ -81,11 +81,18 @@ func (f *Filter32) Capacity() int {
 	return len(f.bits) << 5
 }
 
+// Clears (empties) the filter.
+func (f *Filter32) Clear() {
+	for i := range f.bits {
+		f.bits[i] = 0
+	}
+}
+
 // Returns an approximation of the number of distinct keys stored in f.
 func (f *Filter32) NKeys() float64 {
 	nset := 0
 	for _, b := range f.bits {
-		nset += intmath.Popcount(b)
+		nset += intmath.Popcount32(b)
 	}
 	length := float64(f.Capacity())
 	return -(length * math.Log(1-float64(nset)/length)) / float64(len(f.seed))

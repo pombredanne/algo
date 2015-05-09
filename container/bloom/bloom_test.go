@@ -45,4 +45,27 @@ func TestBloom(t *testing.T) {
 	if diff := math.Abs(n1 - actual); diff > .05*actual {
 		t.Errorf("NKeys() not accurate: got %f, actual %.0f", n1, actual)
 	}
+
+	f1.Clear()
+	if n := f1.NKeys(); n != 0 {
+		t.Errorf("expected zero keys after Clear(), got %d", n)
+	}
+}
+
+func BenchmarkBloom(b *testing.B) {
+	b.StopTimer()
+	r := rand.New(rand.NewSource(18))
+	f, _ := bloom.New32(10000, 14, r)
+
+	for i := 0; i < b.N; i++ {
+		b.StartTimer()
+		for j := uint32(0); j < 5000; j += 2 {
+			f.Add(j)
+		}
+		for j := uint32(0); j < 2500; j++ {
+			f.Get(j)
+		}
+		b.StopTimer()
+		f.Clear()
+	}
 }

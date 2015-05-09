@@ -27,3 +27,12 @@ func Popcount32(v uint32) int {
 	c += ((v64 >> 24) * 0x1001001001001 & 0x84210842108421) % 0x1f
 	return int(c)
 }
+
+// Number of bits set in v.
+func Popcount64(v uint64) (c int) {
+	// https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKern
+	for c = 0; v != 0; c++ {
+		v &= v - 1
+	}
+	return
+}
