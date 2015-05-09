@@ -5,7 +5,10 @@
 // Specialized sorting algorithms.
 package sort
 
-import "sort"
+import (
+	"github.com/larsmans/algo/math/intmath"
+	"sort"
+)
 
 // Strings sorts a slice of strings in increasing order (byte-wise
 // lexicographically).
@@ -13,11 +16,8 @@ import "sort"
 // This function is equivalent to sort.Strings, but faster than the
 // implementation in Go 1.4.
 func Strings(a []string) {
-	n, lgN := len(a), 0
-	for i := n; i > 0; i >>= 1 {
-		lgN++
-	}
-	radixQuicksort(a, 0, 0, n, 2*lgN)
+	n := len(a)
+	radixQuicksort(a, 0, 0, n, 2*intmath.Log2(n+1))
 }
 
 // XXX The following could be generalized by using an interface like

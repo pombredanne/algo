@@ -42,7 +42,7 @@ func TestBloom(t *testing.T) {
 	if n1 != n2 {
 		t.Errorf("NKeys() not the same: %f != %f", n1, n2)
 	}
-	if diff := math.Abs(n1 - actual); diff > .05 * actual {
+	if diff := math.Abs(n1 - actual); diff > .05*actual {
 		t.Errorf("NKeys() not accurate: got %f, actual %.0f", n1, actual)
 	}
 }

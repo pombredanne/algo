@@ -7,6 +7,7 @@ package bloom
 
 import (
 	"fmt"
+	"github.com/larsmans/algo/math/intmath"
 	"math"
 	"math/rand"
 )
@@ -25,9 +26,9 @@ type Filter32 struct {
 // Returns nil and an error if the number of buckets exceeds (1<<32)-1.
 func New32(nbuckets, nhashes int, r *rand.Rand) (f *Filter32, err error) {
 	// Round to next multiple of 32.
-	nmod32 := nbuckets & ((1<<5)-1)
+	nmod32 := nbuckets & ((1 << 5) - 1)
 	if nmod32 != 0 {
-		nbuckets += 32-nmod32
+		nbuckets += 32 - nmod32
 	}
 
 	if nbuckets > math.MaxUint32 {
@@ -62,7 +63,7 @@ func (f *Filter32) Get(h uint32) bool {
 		hs := (h ^ s) % uint32(f.Capacity())
 
 		idx, mask := indexMask(hs)
-		if f.bits[idx] & mask == 0 {
+		if f.bits[idx]&mask == 0 {
 			return false
 		}
 	}
@@ -71,8 +72,8 @@ func (f *Filter32) Get(h uint32) bool {
 
 func indexMask(h uint32) (index, mask uint32) {
 	// hi, lo := h/32, h%32
-	hi, lo := h >> 5, h & ((1<<5)-1)
-	return hi, 1<<lo
+	hi, lo := h>>5, h&((1<<5)-1)
+	return hi, 1 << lo
 }
 
 // The capacity of the filter (number of buckets).
@@ -84,16 +85,8 @@ func (f *Filter32) Capacity() int {
 func (f *Filter32) NKeys() float64 {
 	nset := 0
 	for _, b := range f.bits {
-		nset += popcount(b)
+		nset += intmath.Popcount(b)
 	}
 	length := float64(f.Capacity())
-	return -(length * math.Log(1 - float64(nset)/length)) / float64(len(f.seed))
-}
-
-// https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
-func popcount(v uint32) (c int) {
-	for c = 0; v != 0; c++ {
-		v &= v - 1
-	}
-	return
+	return -(length * math.Log(1-float64(nset)/length)) / float64(len(f.seed))
 }
