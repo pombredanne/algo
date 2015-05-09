@@ -80,8 +80,8 @@ func (f *Filter32) Capacity() int {
 	return len(f.bits) << 5
 }
 
-// Returns an approximation of the number of distinct items stored in f.
-func (f *Filter32) NItems() float64 {
+// Returns an approximation of the number of distinct keys stored in f.
+func (f *Filter32) NKeys() float64 {
 	nset := 0
 	for _, b := range f.bits {
 		nset += popcount(b)

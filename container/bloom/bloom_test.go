@@ -38,11 +38,11 @@ func TestBloom(t *testing.T) {
 		}
 	}
 
-	n1, n2, actual := f1.NItems(), f2.NItems(), float64(len(distinct))
+	n1, n2, actual := f1.NKeys(), f2.NKeys(), float64(len(distinct))
 	if n1 != n2 {
-		t.Errorf("NItems() not the same: %f != %f", n1, n2)
+		t.Errorf("NKeys() not the same: %f != %f", n1, n2)
 	}
 	if diff := math.Abs(n1 - actual); diff > .05 * actual {
-		t.Errorf("NItems not accurate: got %f, actual %.0f", n1, actual)
+		t.Errorf("NKeys() not accurate: got %f, actual %.0f", n1, actual)
 	}
 }
