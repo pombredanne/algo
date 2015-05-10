@@ -17,8 +17,30 @@ func TestSCC(t *testing.T) {
 		label := labels[component[0]]
 		for _, u := range component[1:] {
 			if labels[u] != label {
-				t.Error("expected labels[%d] = %d, got %d", u, labels[u], label)
+				t.Errorf("expected labels[%d] = %d, got %d",
+					u, labels[u], label)
 			}
 		}
+	}
+}
+
+func BenchmarkSCC(b *testing.B) {
+	b.StopTimer()
+
+	g := make(AdjacencyList, 10000)
+	r := rand.New(rand.NewSource(125))
+	for u := range g {
+		nedges := r.Intn(len(g)) / 10
+		for i := 0; i < nedges; i++ {
+			g[u] = append(g[u], r.Intn(len(g)))
+		}
+	}
+
+	_, ncomp := StrongComponents(g)
+	b.Logf("number of strongly connected components: %d", ncomp)
+
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		StrongComponents(g)
 	}
 }
