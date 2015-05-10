@@ -7,7 +7,7 @@ package bloom
 
 import (
 	"fmt"
-	"github.com/larsmans/algo/math/intmath"
+	"github.com/larsmans/algo/extmath/intmath"
 	"math"
 	"math/rand"
 )

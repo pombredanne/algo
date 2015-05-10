@@ -6,7 +6,7 @@
 package sort
 
 import (
-	"github.com/larsmans/algo/math/intmath"
+	"github.com/larsmans/algo/extmath/intmath"
 	"sort"
 )
 
