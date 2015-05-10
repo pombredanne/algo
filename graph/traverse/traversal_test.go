@@ -16,7 +16,7 @@ func (g adjacencyList) Neighbors(u int) []int {
 
 func TestUnweighted(t *testing.T) {
 	g := adjacencyList([][]int{
-		{1, 4}, {2, 5, 0}, {3}, {1, 3}, {4}, {2, 5},
+		{1, 4}, {2, 5}, {3}, {1, 3}, {4}, {2, 5},
 		{7}, // would cause out-of-bounds panic if visited, but it never is
 	})
 
@@ -33,12 +33,9 @@ func TestUnweighted(t *testing.T) {
 	bfs := func(g graph.Directed, cb func(int, int) error, start int) error {
 		return BreadthFirst(g, cb, start)
 	}
-	dfs := func(g graph.Directed, cb func(int, int) error, start int) error {
-		return DepthFirst(g, cb, start)
-	}
 
-	expected := []int{1, 2, 3, 4, 5}
-	for _, traversal := range []typ{bfs, dfs, IterativeDeepening} {
+	expected := []int{0, 1, 2, 3, 4, 5}
+	for _, traversal := range []typ{bfs, IterativeDeepening} {
 		vset = make(map[int]bool)
 		traversal(g, callback, 0)
 
