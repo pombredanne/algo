@@ -6,8 +6,8 @@ package graph
 
 // Strongly connected components algorithm.
 //
-// Returns components labels for the vertices in g.
-func StrongComponents(g FiniteDirected) []int {
+// Returns components labels for the vertices in g and the number of components.
+func StrongComponents(g FiniteDirected) ([]int, int) {
 	// Tarjan's algorithm.
 	n := g.NVertices()
 
@@ -54,7 +54,7 @@ func StrongComponents(g FiniteDirected) []int {
 			visit(u)
 		}
 	}
-	return label
+	return label, curlabel
 }
 
 func min(a, b int) int {
