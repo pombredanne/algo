@@ -17,7 +17,7 @@ const (
 
 func TestTopoSort(t *testing.T) {
 	// Example from CLRS, 3rd ed., p. 613.
-	g := make(adjacencylist, nvertices)
+	g := make(AdjacencyList, nvertices)
 	g[undershorts] = []int{pants, shoes}
 	g[pants] = []int{shoes, belt}
 	g[shirt] = []int{belt, tie}
@@ -40,7 +40,7 @@ func TestTopoSort(t *testing.T) {
 		}
 	}
 
-	for _, c := range []struct { before, after int }{
+	for _, c := range []struct{ before, after int }{
 		{socks, shoes},
 		{undershorts, pants},
 		{undershorts, shoes},

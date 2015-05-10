@@ -8,7 +8,7 @@ import "errors"
 
 // Topological sorting of vertices in a directed acyclic graph.
 //
-// Returns labels (indices) for the vertices of g in a topological order, 
+// Returns labels (indices) for the vertices of g in a topological order,
 // or nil and an error if g is not a directed acyclic graph.
 //
 // To actually get the vertices topologically ordered in an array v, do

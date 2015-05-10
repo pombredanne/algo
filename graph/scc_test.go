@@ -2,19 +2,9 @@ package graph
 
 import "testing"
 
-type adjacencylist [][]int
-
-func (a adjacencylist) Neighbors(u int) []int {
-	return a[u]
-}
-
-func (a adjacencylist) NVertices() int {
-	return len(a)
-}
-
 func TestSCC(t *testing.T) {
 	// Graph from https://commons.wikimedia.org/wiki/File:Scc.png
-	g := adjacencylist{{1}, {2, 4, 5}, {3, 6}, {2, 7}, {0, 5}, {6}, {5}, {6, 3}}
+	g := AdjacencyList{{1}, {2, 4, 5}, {3, 6}, {2, 7}, {0, 5}, {6}, {5}, {6, 3}}
 	labels := StrongComponents(g)
 
 	for _, component := range [][]int{{0, 1, 4}, {2, 3, 7}, {5, 6}} {
