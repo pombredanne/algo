@@ -18,26 +18,25 @@ func TopoSort(g FiniteDirected) (labels []int, err error) {
 	labels = make([]int, n)
 
 	ordnum := n
-	onstack := make([]bool, n)
-	visited := make([]bool, n)
+	flags := make([]struct{ onstack, visited bool }, n)
 
 	var visit func(int)
 	visit = func(u int) {
-		if onstack[u] {
+		if flags[u].onstack {
 			err = errors.New("directed cycle in input to TopoSort")
 			return
 		}
-		if visited[u] {
+		if flags[u].visited {
 			return
 		}
-		onstack[u] = true
+		flags[u].onstack = true
 		for _, v := range g.Neighbors(u) {
 			if visit(v); err != nil {
 				return
 			}
 		}
-		visited[u] = true
-		onstack[u] = false
+		flags[u].visited = true
+		flags[u].onstack = false
 		ordnum--
 		labels[u] = ordnum
 	}
