@@ -2,38 +2,71 @@
 //
 // MIT-licensed. See the file LICENSE for details.
 
-// Caches for arbitrary functions with least-recently used (LRU) eviction
-// strategy.
+// Caches with least-recently used (LRU) eviction strategy.
 package lru
 
-// Cache for function Func.
+// LRU cache.
 type Cache struct {
+	// Used by the Get method to generate values from keys.
 	Func  func(interface{}) interface{}
-	index map[interface{}]int // index of key in queue
+	index map[interface{}]*link
 	list
 }
 
 // Create a new LRU cache for function f with the desired capacity.
+//
+// f may be nil, in which case Get won't work (use Add and Check instead).
 func New(f func(interface{}) interface{}, capacity int) *Cache {
 	if capacity < 1 {
 		panic("capacity < 1")
 	}
-	c := &Cache{Func: f, index: make(map[interface{}]int)}
+	c := &Cache{Func: f, index: make(map[interface{}]*link)}
 	c.init(capacity)
 	return c
 }
 
+// Add key with associated value to c.
+//
+// Overwrites any value for key currently in c.
+func (c *Cache) Add(key interface{}, value interface{}) {
+	p, stored := c.index[key]
+	if stored {
+		p.value = value
+		c.moveToFront(p)
+	} else {
+		c.insert(key, value)
+	}
+}
+
+// Check whether key is in the cache and if so, return its associated value.
+func (c *Cache) Check(key interface{}) (value interface{}, stored bool) {
+	p, stored := c.index[key]
+	if stored {
+		value = p.value
+		c.moveToFront(p)
+	}
+	return
+}
+
+// Calls f for each key, value pair in the cache, in order of descending
+// recency (MRU first, LRU last).
+func (c *Cache) Do(f func(k, v interface{})) {
+	for p := c.head; p != nil; p = p.next {
+		f(p.key, p.value)
+	}
+}
+
 // Fetch value for key in the cache, calling Func to compute it if necessary.
 func (c *Cache) Get(key interface{}) (value interface{}) {
-	i, stored := c.index[key]
+	p, stored := c.index[key]
 	if stored {
-		value = c.valueAt(i)
-		c.moveToFront(i)
+		value = p.value
+		c.moveToFront(p)
 	} else {
 		value = c.Func(key)
 		c.insert(key, value)
 	}
-	return value
+	return
 }
 
 // Number of items currently in the cache.
@@ -46,34 +79,32 @@ func (c *Cache) Capacity() int {
 }
 
 func (c *Cache) insert(key interface{}, value interface{}) {
-	var i int
+	var p *link
 	if c.full() {
 		// evict least recently used item
-		var k interface{}
-		i, k = c.popTail()
-		delete(c.index, k)
+		p = c.popTail()
+		delete(c.index, p.key)
 	} else {
-		i = c.grow()
+		p = c.grow()
 	}
-	c.putFront(key, value, i)
-	c.index[key] = i
+	p.key, p.value = key, value
+	c.putFront(p)
+	c.index[key] = p
 }
 
 // Doubly linked list containing key/value pairs.
 type list struct {
-	front, tail int
+	head, tail *link
 	links       []link
 }
 
 type link struct {
 	key, value interface{}
-	prev, next int
+	prev, next *link
 }
 
 // Initialize l with capacity c.
 func (l *list) init(c int) {
-	l.front = -1
-	l.tail = -1
 	l.links = make([]link, 0, c)
 }
 
@@ -81,51 +112,53 @@ func (l *list) full() bool {
 	return len(l.links) == cap(l.links)
 }
 
-// Grow list by one element and return its index.
-func (l *list) grow() (i int) {
-	i = len(l.links)
-	l.links = l.links[:i+1]
-	return
+// Grow list by one link.
+func (l *list) grow() *link {
+	n := len(l.links)
+	l.links = l.links[:n+1]
+	return &l.links[n]
 }
 
-// Make the node at position i the front of the list.
-// Precondition: the list is not empty.
-func (l *list) moveToFront(i int) {
-	nf := &l.links[i]
-	of := &l.links[l.front]
-
-	nf.prev = l.front
-	of.next = i
-	l.front = i
-}
-
-// Pop the tail off the list and return its index and its key.
-// Precondition: the list is full.
-func (l *list) popTail() (i int, key interface{}) {
-	i = l.tail
-	t := &l.links[i]
-	key = t.key
-	l.links[t.next].prev = -1
-	l.tail = t.next
-	return
-}
-
-// Put (key, value) in position i and make it the front of the list.
-func (l *list) putFront(key, value interface{}, i int) {
-	f := &l.links[i]
-	f.key = key
-	f.value = value
-	f.prev = l.front
-	f.next = -1
-
-	if l.tail == -1 {
-		l.tail = i
-	} else {
-		l.links[l.front].next = i
+// Make p the head of the list. Precondition: l is not empty.
+func (l *list) moveToFront(p *link) {
+	if p == l.head {
+		return
 	}
-	l.front = i
+	if p == l.tail {
+		l.tail = p.prev
+	}
+	next, prev := p.next, p.prev
+	if next != nil {
+		next.prev = prev
+	}
+	if prev != nil {
+		prev.next = next
+	}
+
+	l.head.prev, p.next, p.prev = p, l.head, nil
+	l.head = p
 }
 
-func (l *list) valueAt(i int) interface{} {
-	return l.links[i].value
+// Pop the tail off the list and return it. Precondition: l is full.
+func (l *list) popTail() (t *link) {
+	t = l.tail
+	l.tail = t.prev
+	if l.tail == nil {
+		l.head = nil
+	} else {
+		l.tail.next = nil
+	}
+	t.next, t.prev = nil, nil
+	return
+}
+
+// Make p the head of the list.
+func (l *list) putFront(p *link) {
+	if l.head == nil {
+		l.head, l.tail = p, p
+		p.next, p.prev = nil, nil
+	} else {
+		l.moveToFront(p)
+	}
+	return
 }

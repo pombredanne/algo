@@ -8,6 +8,54 @@ import (
 )
 
 func TestLRU(t *testing.T) {
+	cache := lru.New(nil, 4)
+	cache.Add("foo", 0)
+	cache.Add("bar", 1)
+	cache.Add("baz", 2)
+	if i, ok := cache.Check("foo"); i != 0 || !ok {
+		t.Errorf("expected (0, true), got (%d, %v)", i, ok)
+	}
+
+	// Overwrite key.
+	cache.Add("baz", 3)
+	if i, ok := cache.Check("baz"); i != 3 || !ok {
+		t.Errorf("expected (3, true), got (%d, %v)", i, ok)
+	}
+	if n := cache.Len(); n != 3 {
+		t.Errorf("expected Len() == 3, got %d", n)
+	}
+
+	cache.Add("quux", 4)
+	cache.Add("quuux", 5)
+	// "bar" will have been evicted, because we checked for "foo" and "baz".
+	all := map[string]int{"foo": 0, "baz": 3, "quux": 4, "quuux": 5}
+	cache.Do(func(k, v interface{}) {
+		expect, ok := all[k.(string)]
+		if !ok {
+			t.Errorf("unexpected key in cache: %v", k)
+		}
+		if v.(int) != expect {
+			t.Errorf("wrong value for %s: wanted %d, got %v", k, expect, v)
+		}
+		delete(all, k.(string))
+	})
+	if len(all) != 0 {
+		t.Errorf("not found in cache: %v", all)
+	}
+}
+
+// Test cornercase: LRU with capacity 1.
+func TestLRU1(t *testing.T) {
+	cache := lru.New(nil, 1)
+	cache.Add(1, 2)
+	cache.Add(1, 3)
+	cache.Add("t", "r")
+	if k, ok := cache.Check("t"); k.(string) != "r" || !ok {
+		t.Error(`expected "r" for "t", got %v, %v`, k, ok)
+	}
+}
+
+func TestLRUFunc(t *testing.T) {
 	var ncalls int
 	makeobj := func(key interface{}) interface{} {
 		ncalls++
