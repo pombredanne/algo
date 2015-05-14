@@ -84,7 +84,7 @@ func BenchmarkTopoSort(b *testing.B) {
 			nedges = max
 		}
 		for v := 0; v < nedges; v++ {
-			g[u] = append(g[u], u + 1 + r.Intn(len(g) - u - 1))
+			g[u] = append(g[u], u+1+r.Intn(len(g)-u-1))
 		}
 	}
 
