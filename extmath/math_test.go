@@ -1,4 +1,4 @@
-package math
+package extmath
 
 import (
 	"math"

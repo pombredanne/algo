@@ -2,7 +2,7 @@
 //
 // MIT-licensed. See the file LICENSE for details.
 
-package sort
+package extsort
 
 import "sort"
 
