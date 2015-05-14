@@ -30,7 +30,14 @@ func TestBloom(t *testing.T) {
 			t.Errorf("expected capacity %d, got %d", 1<<16, c)
 		}
 
-		for _, k := range keys {
+		if present := f.GetAdd(keys[0]); present {
+			t.Errorf("filter should not contain %d", keys[0])
+		}
+		if present := f.GetAdd(keys[0]); !present {
+			t.Errorf("filter should contain %d", keys[0])
+		}
+
+		for _, k := range keys[1:] {
 			f.Add(k)
 			if !f.Get(k) {
 				t.Fatalf("inserted key %d missing from filter", k)

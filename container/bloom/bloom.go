@@ -70,6 +70,20 @@ func (f *Filter32) Get(h uint32) bool {
 	return true
 }
 
+// Combined Get and Add. Adds key with h to the filter and reports whether it
+// was already present.
+func (f *Filter32) GetAdd(h uint32) bool {
+	absent := false
+	for _, s := range f.seed {
+		hs := (h ^ s) % uint32(f.Capacity())
+
+		idx, mask := indexMask(hs)
+		absent = absent || (f.bits[idx]&mask == 0)
+		f.bits[idx] |= mask
+	}
+	return !absent
+}
+
 func indexMask(h uint32) (index, mask uint32) {
 	// hi, lo := h/32, h%32
 	hi, lo := h>>5, h&((1<<5)-1)
