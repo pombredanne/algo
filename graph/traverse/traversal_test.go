@@ -8,14 +8,8 @@ import (
 	"testing"
 )
 
-type adjacencyList [][]int
-
-func (g adjacencyList) Neighbors(u int) []int {
-	return g[u]
-}
-
 func TestUnweighted(t *testing.T) {
-	g := adjacencyList([][]int{
+	g := graph.AdjacencyList([][]int{
 		{1, 4}, {2, 5}, {3}, {1, 3}, {4}, {2, 5},
 		{7}, // would cause out-of-bounds panic if visited, but it never is
 	})
