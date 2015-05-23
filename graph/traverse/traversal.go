@@ -14,7 +14,7 @@ import "github.com/larsmans/algo/graph"
 // vertices; the former is -1 for the start nodes. The callback is called
 // exactly once for each "to" vertex in the graph. Traversal stops when the
 // callback returns a non-nil error; the error is propagated.
-func BreadthFirst(g graph.Directed, callback func(from, to int) error,
+func BreadthFirst(g graph.Graph, callback func(from, to int) error,
 	start ...int) error {
 
 	closed := make(map[int]bool)
@@ -47,7 +47,7 @@ func BreadthFirst(g graph.Directed, callback func(from, to int) error,
 //
 // Compared to BreadthFirst, this function uses less memory but may take more
 // time. It also supports only a single start node.
-func IterativeDeepening(g graph.Directed, callback func(from, to int) error,
+func IterativeDeepening(g graph.Graph, callback func(from, to int) error,
 	start int) (err error) {
 
 	closed := make(map[int]bool)

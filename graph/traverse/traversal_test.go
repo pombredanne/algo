@@ -23,8 +23,8 @@ func TestUnweighted(t *testing.T) {
 		return nil
 	}
 
-	type typ func(g graph.Directed, cb func(int, int) error, start int) error
-	bfs := func(g graph.Directed, cb func(int, int) error, start int) error {
+	type typ func(g graph.Graph, cb func(int, int) error, start int) error
+	bfs := func(g graph.Graph, cb func(int, int) error, start int) error {
 		return BreadthFirst(g, cb, start)
 	}
 
