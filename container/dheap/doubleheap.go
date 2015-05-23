@@ -11,6 +11,9 @@ import "container/heap"
 //
 // Every non-empty heap must be initialized using this function before any of
 // the other functions of this package is used on it.
+//
+// Note that, although this package uses the interface from container/heap,
+// you must not mix operations from both packages.
 func Init(h heap.Interface) {
 	n := h.Len()
 	for i := parent(n); i >= 0; i-- {
