@@ -37,7 +37,7 @@ func BenchmarkPartial(b *testing.B) {
 
 	Partial(data, 100)
 	if !sort.IsSorted(data[:100]) {
-		b.Fatal("not sorted: %v", data[:100])
+		b.Fatalf("not sorted: %v", data[:100])
 	}
 }
 

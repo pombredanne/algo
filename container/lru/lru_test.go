@@ -51,7 +51,7 @@ func TestLRU1(t *testing.T) {
 	cache.Add(1, 3)
 	cache.Add("t", "r")
 	if k, ok := cache.Check("t"); k.(string) != "r" || !ok {
-		t.Error(`expected "r" for "t", got %v, %v`, k, ok)
+		t.Errorf(`expected "r" for "t", got %v, %v`, k, ok)
 	}
 }
 
