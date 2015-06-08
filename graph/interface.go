@@ -23,11 +23,23 @@ func (g AdjacencyList) OutDegree(u int) int {
 var _ FiniteDirected = AdjacencyList{}
 var _ FiniteDirected = &AdjacencyList{}
 
-// Interface for directed graphs.
-type Directed interface {
+// Interface for general graphs.
+//
+// Vertices (nodes) are represented as non-negative integers. The set of
+// vertices in the graph is implicit; all that matters is that, given a vertex,
+// we can find its neighbors.
+//
+// This interface is agnostic wrt. directedness of the graph. Derived
+// interfaces may place additional constraints on the semantics of Neighbors.
+type Graph interface {
 	// The neighbors of u. Order doesn't matter; consumer algorithms will not
 	// modify the returned slice.
 	Neighbors(u int) []int
+}
+
+// Interface for directed graphs.
+type Directed interface {
+	Graph
 
 	// Out-degree of u; must match the length of Neighbors(u).
 	OutDegree(u int) int
