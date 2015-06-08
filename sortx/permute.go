@@ -4,7 +4,8 @@ import "sort"
 
 // Generates the lexicographically next multiset permutation, in-place.
 //
-// Reports next when there is no next permutation, i.e., data is reverse-sorted.
+// Returns false when there is no next permutation, i.e., data is
+// reverse-sorted.
 func NextPermutation(data sort.Interface) bool {
 	n := data.Len()
 	var k, l int
