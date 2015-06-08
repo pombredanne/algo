@@ -1,4 +1,4 @@
-package extsort
+package sortx
 
 import "sort"
 

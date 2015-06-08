@@ -3,7 +3,7 @@
 // MIT-licensed. See the file LICENSE for details.
 
 // Specialized sorting algorithms.
-package extsort
+package sortx
 
 import (
 	"github.com/larsmans/algo/extmath/intmath"
