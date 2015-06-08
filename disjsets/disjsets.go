@@ -10,14 +10,17 @@ type set struct {
 	rank   uint8 // Max. rank is log(N); assume N < 2**256
 }
 
-// A disjoint-set forest. Sets are represented as integer indices in the
-// range [0, n) where n in the number of elements in the set.
+// A disjoint-set forest.
+//
+// Elements are represented as integer indices in the range [0, n).
 type Forest struct {
 	sets  []set
 	nsets int
 }
 
-// Construct a new disjoint-set forest of n elements in n singleton sets.
+// Construct a new disjoint-set forest of n elements.
+//
+// Initially, the elements form n singleton sets.
 func New(n int) *Forest {
 	sets := make([]set, n)
 	for i := range sets {
