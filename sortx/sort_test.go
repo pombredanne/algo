@@ -94,7 +94,7 @@ func TestStrings(t *testing.T) {
 
 func BenchmarkStrings(b *testing.B) {
 	b.StopTimer()
-	data := randomStrings(10000)
+	data := randomStrings(100000)
 
 	for i := 0; i < b.N; i++ {
 		a := make([]string, len(data))

@@ -5,10 +5,7 @@
 // Specialized sorting algorithms.
 package sortx
 
-import (
-	"github.com/larsmans/algo/extmath/intmath"
-	"sort"
-)
+import "github.com/larsmans/algo/extmath/intmath"
 
 // Strings sorts a slice of strings in increasing order (byte-wise
 // lexicographically).
@@ -30,7 +27,7 @@ func Strings(a []string) {
 // Proc. SODA, http://www.cs.princeton.edu/~rs/strings/paper.pdf. Also
 // http://www.drdobbs.com/database/sorting-strings-with-three-way-radix-qui/184410724.
 func radixQuicksort(data []string, index, a, b, depth int) {
-	for b-a > 7 && depth > 0 {
+	for b-a > 1 && depth > 0 {
 		pivot := medianOfThreeBytes(
 			char(data[a], index),
 			char(data[a+(b-a)/2], index),
@@ -58,9 +55,6 @@ func radixQuicksort(data []string, index, a, b, depth int) {
 		}
 		a, b = lo, hi
 		index++
-	}
-	if b-a > 1 {
-		sort.Strings(sort.StringSlice(data[a:b]))
 	}
 }
 
