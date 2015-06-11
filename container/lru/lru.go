@@ -28,7 +28,7 @@ func New(f func(interface{}) interface{}, capacity int) *Cache {
 // Add key with associated value to c.
 //
 // Overwrites any value for key currently in c.
-func (c *Cache) Add(key interface{}, value interface{}) {
+func (c *Cache) Add(key, value interface{}) {
 	p, stored := c.index[key]
 	if stored {
 		p.value = value
