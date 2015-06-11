@@ -9,7 +9,8 @@ import "sort"
 func NextPermutation(data sort.Interface) bool {
 	n := data.Len()
 	var k, l int
-	for k = n-2; k >= 0 && !data.Less(k, k+1); k-- { }
+	for k = n - 2; k >= 0 && !data.Less(k, k+1); k-- {
+	}
 	if k < 0 {
 		return false
 	}
