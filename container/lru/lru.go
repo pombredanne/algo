@@ -74,6 +74,7 @@ func (c *Cache) Len() int {
 	return len(c.links)
 }
 
+// Maximum number of items that c will store.
 func (c *Cache) Capacity() int {
 	return cap(c.links)
 }
