@@ -5,10 +5,26 @@
 // Package syncx provides synchronization algorithms.
 package syncx
 
-import "sync/atomic"
+import (
+	"runtime"
+	"sync/atomic"
+)
 
+// A mutex with a TryLock method that returns immediately if it is already
+// locked.
+//
+// The zero value represents an unlocked mutex.
 type TryMutex struct {
 	v int32
+}
+
+// Lock mu.
+//
+// This spins on TryLock, yielding the processor on every unsuccessful call.
+func (mu *TryMutex) Lock() {
+	for !mu.TryLock() {
+		runtime.Gosched()
+	}
 }
 
 // Try to lock l.

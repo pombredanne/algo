@@ -2,6 +2,8 @@ package syncx_test
 
 import (
 	"github.com/larsmans/algo/syncx"
+	"runtime"
+	"sync"
 	"testing"
 )
 
@@ -35,4 +37,27 @@ func TestTryMutex(t *testing.T) {
 		t.Logf("got %T %q", err, err)
 	}()
 	mu.Unlock()
+}
+
+func TestTryMutexLocker(t *testing.T) {
+	var mu syncx.TryMutex
+	var l sync.Locker = &mu
+
+	l.Lock()
+	ch := make(chan struct{})
+	go func() {
+		l.Lock()
+		ch <- struct{}{}
+	}()
+	runtime.Gosched()
+
+	if mu.TryLock() {
+		t.Fatal("mu should be locked")
+	}
+	l.Unlock()
+	<-ch
+	l.Unlock()
+	if !mu.TryLock() {
+		t.Fatal("mu should be unlocked")
+	}
 }
