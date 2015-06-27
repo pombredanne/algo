@@ -20,7 +20,7 @@ type Sampler struct {
 // Construct a Sampler that using the PRNG r and produces a sample of k items.
 func NewSampler(r *rand.Rand, k int) *Sampler {
 	return &Sampler{
-		r: r,
+		r:      r,
 		sample: make([]interface{}, 0, k),
 	}
 }
