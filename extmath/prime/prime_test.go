@@ -4,13 +4,21 @@ import "testing"
 
 func TestSieve(t *testing.T) {
 	var s Sieve32
+	primes100k := 0
 	for i := 0; i < 10; i++ {
 		primes := s.Next(nil)
 		for _, p := range primes {
 			if div := divider(p); div != p {
 				t.Errorf("%d %% %d == 0", p, div)
 			}
+			if p < 100000 {
+				primes100k++
+			}
 		}
+	}
+
+	if primes100k != 9592 {
+		t.Errorf("expected 9592 primes below 100,000, got %d", primes100k)
 	}
 }
 
@@ -37,5 +45,5 @@ func BenchmarkSieve(b *testing.B) {
 			nprimes += len(primes)
 		}
 	}
-	b.Log(nprimes)
+	b.Logf("got %d primes", nprimes)
 }
