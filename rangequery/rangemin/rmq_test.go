@@ -32,7 +32,8 @@ func TestRMQ(t *testing.T) {
 	}, `out of (range|bounds)`, t) // Error message from Go runtime.
 
 	matchPanic(func() {
-		rmq.Min(0, 10*len(data))
+		toobig := 10*len(data)
+		rmq.Min(toobig, toobig+1)
 	}, `j > data\.Len`, t)
 
 	matchPanic(func() {

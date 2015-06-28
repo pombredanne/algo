@@ -84,10 +84,10 @@ func (r *Index) Min(i, j int) int {
 	switch {
 	case i >= j:
 		panic("got i >= j in Index.Min")
-	case i+1 == j:
-		return i
 	case j > r.n:
 		panic("j > data.Len() in Index.Min")
+	case i+1 == j:
+		return i
 	}
 
 	k := uint(intmath.Log2(j - i))
