@@ -2,45 +2,40 @@ package prime
 
 import "testing"
 
-var first = [...]uint32{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47}
-
 func TestSieve(t *testing.T) {
 	var s Sieve32
-
-	// This should not panic.
-	s.Next([]uint32{})
-
-	for _, k := range []int{1, 2, 5, 8, len(first)} {
-		s = Sieve32{} // reset
-		got := make([]uint32, k)
-		s.Next(got)
-		s.Next([]uint32{})
-		for i := range got {
-			if got[i] != first[i] {
-				t.Errorf("%d'th prime is %d, got %d", i, first[i], got[i])
+	for i := 0; i < 10; i++ {
+		primes := s.Next(nil)
+		for _, p := range primes {
+			if div := divider(p); div != p {
+				t.Errorf("%d %% %d == 0", p, div)
 			}
-		}
-	}
-
-	// Test incremental sieving
-	s = Sieve32{}
-	got := make([]uint32, len(first))
-	s.Next(got[:2])
-	s.Next(got[2:6])
-	s.Next(got[6:])
-	for i := range got {
-		if got[i] != first[i] {
-			t.Errorf("%d'th prime is %d, got %d", i, first[i], got[i])
 		}
 	}
 }
 
-func BenchmarkSieve(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		var s Sieve32
-		pr := make([]uint32, 10)
-		for j := 0; j < 2000; j++ {
-			s.Next(pr)
+func divider(p uint32) uint32 {
+	if p&1 == 0 {
+		return 2
+	}
+	for div := uint64(3); div*div <= uint64(p); div += 2 {
+		if uint64(p)%div == 0 {
+			return uint32(div)
 		}
 	}
+	return p
+}
+
+func BenchmarkSieve(b *testing.B) {
+	var nprimes int
+	for i := 0; i < b.N; i++ {
+		var s Sieve32
+		var primes []uint32 = nil
+		nprimes = 0
+		for j := 0; j < 200; j++ {
+			primes = s.Next(primes)
+			nprimes += len(primes)
+		}
+	}
+	b.Log(nprimes)
 }

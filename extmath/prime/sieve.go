@@ -5,61 +5,78 @@
 // Prime number generation.
 package prime
 
+const block = 1 << 16
+
 // 32-bit prime sieve: generates all primes less than (1<<32).
 type Sieve32 struct {
-	// Maps composite numbers to one of their factors.
-	factors map[uint64]uint64
-	next    uint64
+	lo uint32
 }
 
-// Generates the next len(buf) primes.
-// Returns a prefix of buf, filled with primes.
+/*
+func New32(lo uint32) *Sieve32 {
+	return &Sieve32{lo: lo}
+}
+*/
+
+// Generates a new block of primes.
+//
+// The size of the block is not guaranteed.
+//
+// buf is a buffer of memory that may be reused to store the result. It may be
+// nil.
+//
+// Example usage:
+//
+//	var primes []uint32 = nil
+//	for {
+//		primes = sieve.Next(primes)
+//		for _, p := range primes {
+//			if p > maxwanted {
+//				break
+//			}
+//			// process p
+//		}
+//	}
 func (s *Sieve32) Next(buf []uint32) (primes []uint32) {
-	// Sieve of Eratosthenes, inspired by David Eppstein's Python version at
-	// https://code.activestate.com/recipes/117119-sieve-of-eratosthenes/
-	// with the optimization by Alex Martelli. Further optimized by simple
-	// wheel factorization: only check 6n-1 and 6n+1.
-
-	i, n := 0, len(buf)
-	primes = buf
-	q, factors := s.next, s.factors
-
-	if factors == nil && n > 0 {
-		factors = make(map[uint64]uint64)
-		s.factors = factors
-		primes[0] = 2
-		i++
-	}
-	if q == 0 && i < n {
-		primes[i] = 3
-		i++
-		q = 5
-	}
-
-	for q < (1<<32-3) && i < n {
-		factor, composite := factors[q]
-		if composite {
-			delete(factors, q)
-			x := factor + q
-			for {
-				if _, composite = factors[x]; !composite {
-					break
-				}
-				x += factor
-			}
-			factors[x] = factor
+	// Segmented sieve of Eratosthenes, after Sorenson (1990),
+	// https://research.cs.wisc.edu/techreports/1990/TR909.pdf
+	if s.lo == 0 {
+		if cap(buf) >= len(primes16) {
+			primes = buf
 		} else {
-			factors[q*q] = 2 * q
-			primes[i] = uint32(q)
-			i++
+			primes = make([]uint32, len(primes16))
 		}
 
-		if (q+1)%6 == 0 {
-			q += 2
-		} else {
-			q += 4
+		for i, p := range primes16 {
+			primes[i] = uint32(p)
+		}
+		s.lo = block
+		return
+	} else if s.lo == 1<<32-1 {
+		return
+	}
+
+	lo := s.lo
+	// TODO Only process even numbers.
+	composite := [block]bool{}
+	composite[0] = true
+	for _, p16 := range primes16 {
+		p := uint32(p16)
+		// Formula for first multiple from Sorenson.
+		for mult := p + lo - (lo % p); mult < lo+block; mult += p {
+			composite[mult-lo] = true
 		}
 	}
-	s.next = q
-	return primes[:i]
+
+	primes = buf[:0]
+	for i, c := range composite {
+		if !c {
+			primes = append(primes, lo+uint32(i))
+		}
+	}
+	s.lo += block
+	if s.lo == 0 {
+		s.lo = 1<<32 - 1
+	}
+	return
 }
