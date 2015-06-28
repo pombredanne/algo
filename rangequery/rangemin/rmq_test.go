@@ -28,6 +28,14 @@ func TestRMQ(t *testing.T) {
 	}
 
 	matchPanic(func() {
+		rmq.Min(-1, 2)
+	}, `out of (range|bounds)`, t) // Error message from Go runtime.
+
+	matchPanic(func() {
+		rmq.Min(0, 10*len(data))
+	}, `j > data\.Len`, t)
+
+	matchPanic(func() {
 		New(sort.IntSlice{})
 	}, "Len", t)
 
@@ -40,16 +48,21 @@ func TestRMQ(t *testing.T) {
 
 func matchPanic(f func(), pattern string, t *testing.T) {
 	re := regexp.MustCompile(pattern)
+	check := func(s string) {
+		if !re.MatchString(s) {
+			t.Errorf("%q does not match %q", s, pattern)
+		}
+	}
 	defer func() {
 		switch x := recover().(type) {
 		case nil:
 			t.Fatal("no panic")
 		case string:
-			if !re.MatchString(x) {
-				t.Errorf("%q does not match %q", x, pattern)
-			}
+			check(x)
+		case error:
+			check(x.Error())
 		default:
-			t.Fatal("wrong type %T, expected string", x)
+			t.Fatalf("wrong type %T, expected string", x)
 		}
 	}()
 

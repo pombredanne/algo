@@ -17,6 +17,7 @@ type Interface interface {
 // which must stay static for the lifetime of the Index.
 type Index struct {
 	Data Interface
+	n    int // Caches data.Len(); we don't know how expensive that call is.
 	table
 }
 
@@ -70,7 +71,7 @@ func New(data Interface) *Index {
 		}
 	}
 
-	return &Index{Data: data, table: t}
+	return &Index{Data: data, n: n, table: t}
 }
 
 // Returns the index of the minimum of r.Data[i:j]. Takes constant time.
@@ -80,13 +81,15 @@ func New(data Interface) *Index {
 //
 // i >= j is a runtime error.
 func (r *Index) Min(i, j int) int {
-	if i >= j {
+	switch {
+	case i >= j:
 		panic("got i >= j in Index.Min")
+	case i+1 == j:
+		return i
+	case j > r.n:
+		panic("j > data.Len() in Index.Min")
 	}
 
-	if i+1 == j {
-		return i
-	}
 	k := uint(intmath.Log2(j - i))
 	a := r.at(i, k)
 	b := r.at(j-int(1<<k), k)
