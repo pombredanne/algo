@@ -2,6 +2,7 @@
 //
 // MIT-licensed. See the file LICENSE for details.
 
+// Prime number generation.
 package prime
 
 // 32-bit prime sieve: generates all primes less than (1<<32).
