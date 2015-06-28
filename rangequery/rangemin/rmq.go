@@ -12,6 +12,9 @@ type Interface interface {
 }
 
 // Range-min query index for Data.
+//
+// An Index allows finding the (index of the) minimum for subranges of Data,
+// which must stay static for the lifetime of the Index.
 type Index struct {
 	Data Interface
 	table
@@ -19,19 +22,19 @@ type Index struct {
 
 type table struct {
 	entry []int
-	ncols uint
+	ncols int
 }
 
-func newTable(n, k uint) table {
-	return table{entry: make([]int, int(n*k)), ncols: uint(k)}
+func newTable(n, k int) table {
+	return table{entry: make([]int, n*k), ncols: k}
 }
 
-func (t table) at(i, j uint) int {
-	return t.entry[int(i*t.ncols+j)]
+func (t table) at(i int, j uint) int {
+	return t.entry[i*t.ncols+int(j)]
 }
 
-func (t table) set(i, j uint, v int) {
-	t.entry[int(i*t.ncols+j)] = v
+func (t table) set(i int, j uint, v int) {
+	t.entry[i*t.ncols+int(j)] = v
 }
 
 // Construct new range-min query index.
@@ -43,21 +46,21 @@ func (t table) set(i, j uint, v int) {
 func New(data Interface) *Index {
 	// Sparse table DP algorithm from Bender et al.:
 	// https://www3.cs.stonybrook.edu/~bender/pub/JALG05-daglca.pdf (§2.3)
-	n := uint(data.Len())
+	n := data.Len()
 	if n == 0 {
 		panic("data.Len() must be > 0")
 	}
-	logn := uint(intmath.Log2(int(n)))
+	logn := intmath.Log2(n)
 	t := newTable(n, logn)
 
 	// Base case: unit length ranges.
-	for i := uint(0); i < n; i++ {
-		t.set(i, 0, int(i))
+	for i := 0; i < n; i++ {
+		t.set(i, 0, i)
 	}
 	for j := uint(1); (1 << j) <= n; j++ {
-		for i := uint(0); i+(1<<j)-1 < n; i++ {
+		for i := 0; i+int(1<<j)-1 < n; i++ {
 			l := t.at(i, j-1)
-			r := t.at(i+(1<<(j-1)), j-1)
+			r := t.at(i+int(1<<(j-1)), j-1)
 
 			if data.Less(l, r) {
 				t.set(i, j, l)
@@ -72,20 +75,21 @@ func New(data Interface) *Index {
 
 // Returns the index of the minimum of r.Data[i:j]. Takes constant time.
 //
-// The index is relative to the start of r.Data.
+// The index is relative to the start of r.Data. Ties are broken in an
+// arbitrary way.
 //
-// i > j is a runtime error.
+// i >= j is a runtime error.
 func (r *Index) Min(i, j int) int {
-	switch {
-	case i == j:
-		return i
-	case i > j:
-		panic("got i > j in Index.Min")
+	if i >= j {
+		panic("got i >= j in Index.Min")
 	}
 
-	k := uint(intmath.Log2(j - i + 1))
-	a := r.at(uint(i), k)
-	b := r.at(uint(j-(1<<k)+1), k)
+	if i+1 == j {
+		return i
+	}
+	k := uint(intmath.Log2(j - i))
+	a := r.at(i, k)
+	b := r.at(j-int(1<<k), k)
 	if r.Data.Less(a, b) {
 		return a
 	}

@@ -17,7 +17,7 @@ func TestRMQ(t *testing.T) {
 		{0, 1, 0},
 		{0, 4, 0},
 		{0, len(data), 0},
-		{1, 1, 1},
+		{1, 2, 1},
 		{1, 3, 2},
 		{3, 8, 6},
 	} {
@@ -27,13 +27,15 @@ func TestRMQ(t *testing.T) {
 		}
 	}
 
-	matchPanic(func() { 
+	matchPanic(func() {
 		New(sort.IntSlice{})
 	}, "Len", t)
 
-	matchPanic(func() {
-		rmq.Min(6, 5)
-	}, "i > j", t)
+	for _, offset := range []int{0, -1} {
+		matchPanic(func() {
+			rmq.Min(5, 5+offset)
+		}, "i >= j", t)
+	}
 }
 
 func matchPanic(f func(), pattern string, t *testing.T) {
