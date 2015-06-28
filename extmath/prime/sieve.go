@@ -57,10 +57,9 @@ func (s *Sieve32) Next(buf []uint32) (primes []uint32) {
 	}
 
 	lo := s.lo
-	// TODO Only process even numbers.
+	// TODO Only process even numbers here.
 	composite := [block]bool{}
-	composite[0] = true
-	for _, p16 := range primes16 {
+	for _, p16 := range primes16[1:] {
 		p := uint32(p16)
 		// Formula for first multiple from Sorenson.
 		for mult := p + lo - (lo % p); mult < lo+block; mult += p {
@@ -69,8 +68,8 @@ func (s *Sieve32) Next(buf []uint32) (primes []uint32) {
 	}
 
 	primes = buf[:0]
-	for i, c := range composite {
-		if !c {
+	for i := 1; i < len(composite); i += 2 {
+		if !composite[i] {
 			primes = append(primes, lo+uint32(i))
 		}
 	}
