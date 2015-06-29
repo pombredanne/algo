@@ -8,7 +8,7 @@ func TestSieve(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		primes := s.Next(nil)
 		for _, p := range primes {
-			if div := divider(p); div != p {
+			if div := divisor(p); div != p {
 				t.Errorf("%d %% %d == 0", p, div)
 			}
 			if p < 100000 {
@@ -22,7 +22,15 @@ func TestSieve(t *testing.T) {
 	}
 }
 
-func divider(p uint32) uint32 {
+func TestBigPrimes(t *testing.T) {
+	for _, p := range segment(1<<32 - 1<<16, nil) {
+		if divisor(p) != p {
+			t.Errorf("not a prime: %d", p)
+		}
+	}
+}
+
+func divisor(p uint32) uint32 {
 	if p&1 == 0 {
 		return 2
 	}
