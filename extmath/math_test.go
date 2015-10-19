@@ -5,6 +5,23 @@ import (
 	"testing"
 )
 
+func TestDigamma(t *testing.T) {
+	// y values based on the SciPy implementation's output.
+	for _, c := range []struct{ x, y float64 }{
+		{1e-60, -9.9999999999999995e+59},
+		{1e-10, -10000000000.577215},
+		{.2, -5.2890398965921879},
+		{1, -0.57721566490153287},
+		{3.14159, 0.9772123148520715},
+		{12.15, 2.4556127846565494},
+		{916, 6.8194704138277933},
+	} {
+		if math.Abs(Digamma(c.x)-c.y) > 3e-9 {
+			t.Errorf("expected %f, got %f", c.y, Digamma(c.x))
+		}
+	}
+}
+
 func TestLogAddExp(t *testing.T) {
 	x := LogAddExp(1e-10, math.Inf(-1))
 	if x != 1e-10 {

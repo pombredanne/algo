@@ -3,6 +3,36 @@ package extmath
 
 import "math"
 
+// OEIS A001620
+const euler = 0.57721566490153286060651209008240243104215933593992
+
+// Digamma (psi) function: the logarithmic derivative of the gamma function.
+//
+// Currently only implemented for positive x.
+func Digamma(x float64) float64 {
+	if x <= 0 {
+		panic("Digamma not implemented for non-positive x")
+	}
+
+	// J. Bernardo (1976). Algorithm AS 103: Psi (Digamma) Function.
+	// Applied Statistics, http://www.uv.es/~bernardo/1976AppStatist.pdf.
+	if x <= 1e-6 {
+		return -euler - 1/x
+	}
+
+	result := 0.
+	for x < 6 {
+		result -= 1 / x
+		x += 1
+	}
+
+	r := 1 / x
+	result += math.Log(x) - .5*r
+	r = r * r
+	result -= r * ((1. / 12.) - r*((1./120.)-r*(1./252.)))
+	return result
+}
+
 // log(exp(a) + exp(b)), evaluated in a numerically stable way.
 func LogAddExp(a, b float64) float64 {
 	if b > a {
