@@ -44,7 +44,7 @@ func TestLogistic(t *testing.T) {
 		}
 	}
 
-	for _, c := range []struct{p, logit float64} {
+	for _, c := range []struct{ p, logit float64 }{
 		{1, math.Inf(1)},
 		{0, math.Inf(-1)},
 	} {
@@ -52,7 +52,7 @@ func TestLogistic(t *testing.T) {
 			t.Errorf("Logit error: got %g, wanted %g", logit, c.logit)
 		}
 	}
-	for _, p := range []float64{-1, -1e300, 1+1e300, 2} {
+	for _, p := range []float64{-1, -1e300, 1 + 1e300, 2} {
 		if !math.IsNaN(Logit(p)) {
 			t.Errorf("expected NaN for Logit(%g), got %g", p, Logit(p))
 		}

@@ -54,5 +54,5 @@ func Logistic(x float64) float64 {
 //	Logit(p < 0) = NaN
 //	Logit(p > 1) = NaN
 func Logit(p float64) float64 {
-	return math.Log(p/(1-p))
+	return math.Log(p / (1 - p))
 }
