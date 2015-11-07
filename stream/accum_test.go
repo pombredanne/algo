@@ -1,4 +1,4 @@
-package cumulative
+package stream
 
 import (
 	"math"

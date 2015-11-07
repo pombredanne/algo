@@ -2,11 +2,7 @@
 //
 // MIT-licensed. See the file LICENSE for details.
 
-// The types in this package implement accumulators for various statistics.
-//
-// The zero value of each type represents an "empty" accumulator.
-// The Value method can be called at any time to obtain the accumulated value.
-package cumulative
+package stream
 
 // Cumulative moving average.
 type Mean struct {
@@ -26,7 +22,7 @@ func (avg *Mean) Value() float64 {
 	return avg.sum.Sum
 }
 
-// Stable cumulative sum (Kahan's algorithm).
+// Stable sum (Kahan's algorithm).
 //
 // The Sum member is the value returned by the Value method.
 type Sum struct {
@@ -50,6 +46,7 @@ type Variance struct {
 	nobs           int64
 }
 
+// Adds value x with weight 1 to the accumulator v.
 func (v *Variance) Add(x float64) {
 	v.AddW(x, 1)
 }

@@ -2,5 +2,6 @@
 //
 // MIT-licensed. See the file LICENSE for details.
 
-// Package stream contains algorithms for processing streams of data.
+// Package stream contains accumulators and algorithms for processing streams
+// of data.
 package stream
