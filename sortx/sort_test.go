@@ -67,7 +67,7 @@ func BenchmarkSelect(b *testing.B) {
 	r := rand.New(rand.NewSource(42))
 
 	for i := 0; i < b.N; i++ {
-		shuffle(a, r)
+		Shuffle(a, r)
 		b.StartTimer()
 		for _, k := range []int{5, 166, 900, 126, 0} {
 			Select(a, k)
@@ -113,11 +113,4 @@ func randomStrings(n int) []string {
 		strs[i] = strconv.Itoa(int(rng.Int31()))
 	}
 	return strs
-}
-
-func shuffle(a []float64, r *rand.Rand) {
-	for i := len(a) - 1; i > 0; i-- {
-		j := r.Intn(i + 1)
-		a[i], a[j] = a[j], a[i]
-	}
 }
