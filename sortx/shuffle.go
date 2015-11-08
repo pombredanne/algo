@@ -4,15 +4,18 @@
 
 package sortx
 
-import (
-	"math/rand"
-	"sort"
-)
+import "math/rand"
 
-// Randomly shuffle data.
+// Subset of sort.Interface for the Shuffle function.
+type Swapper interface {
+	Len() int
+	Swap(i, j int)
+}
+
+// Randomly permute data.
 //
 // If r == nil, uses the default rand.Source of the math/rand package.
-func Shuffle(data sort.Interface, r *rand.Rand) {
+func Shuffle(data Swapper, r *rand.Rand) {
 	if r == nil {
 		r = rand.New(randpkg{})
 	}
