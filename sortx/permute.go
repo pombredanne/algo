@@ -4,8 +4,6 @@
 
 package sortx
 
-package sortx
-
 import "sort"
 
 // Generates the lexicographically next multiset permutation, in-place.
