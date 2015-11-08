@@ -9,9 +9,8 @@ import (
 
 func TestPartial(t *testing.T) {
 	r := rand.New(rand.NewSource(42))
-	a := sort.IntSlice{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-	for k := range a {
-		shuffle(a, r)
+	for k := 0; k < 10; k++ {
+		a := sort.IntSlice(r.Perm(10))
 		Partial(a, k)
 		for i := 0; i < k; i++ {
 			if a[i] != i {
@@ -43,9 +42,8 @@ func BenchmarkPartial(b *testing.B) {
 
 func TestSelect(t *testing.T) {
 	r := rand.New(rand.NewSource(42))
-	a := sort.IntSlice{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
-	for k := range a {
-		shuffle(a, r)
+	for k := 0; k < 16; k++ {
+		a := sort.IntSlice(r.Perm(16))
 		Select(a, k)
 		if a[k] != k {
 			t.Errorf("expected %d, got %d", k, a[k])
@@ -115,4 +113,11 @@ func randomStrings(n int) []string {
 		strs[i] = strconv.Itoa(int(rng.Int31()))
 	}
 	return strs
+}
+
+func shuffle(a []float64, r *rand.Rand) {
+	for i := len(a)-1; i > 0; i-- {
+		j := r.Intn(i+1)
+		a[i], a[j] = a[j], a[i]
+	}
 }
