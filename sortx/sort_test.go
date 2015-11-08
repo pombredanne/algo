@@ -116,8 +116,8 @@ func randomStrings(n int) []string {
 }
 
 func shuffle(a []float64, r *rand.Rand) {
-	for i := len(a)-1; i > 0; i-- {
-		j := r.Intn(i+1)
+	for i := len(a) - 1; i > 0; i-- {
+		j := r.Intn(i + 1)
 		a[i], a[j] = a[j], a[i]
 	}
 }
