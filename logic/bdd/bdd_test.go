@@ -37,6 +37,13 @@ func TestBDD(t *testing.T) {
 			t.Errorf("not a SAT solution: %v", assign)
 		}
 	}
+
+	r := h.Eval(func(v boolean.Var) bool {
+		return [...]bool{true, false, true}[int(v)]
+	})
+	if !r {
+		t.Error("expected true, got false from Eval")
+	}
 }
 
 func TestSAT(t *testing.T) {

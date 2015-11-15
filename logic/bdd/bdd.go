@@ -29,8 +29,8 @@ type Builder struct {
 	nvars   int
 	inverse map[node]*node
 
-	nodecache *[24]node
-	ncached   int
+	freelist *[24]node
+	nfree   int
 }
 
 func NewBuilder() *Builder {
@@ -159,12 +159,12 @@ func (b *Builder) mknode(v boolean.Var, l, h *node) *node {
 }
 
 func (b *Builder) newnode(v boolean.Var, l, h *node) *node {
-	if b.ncached == 0 {
-		b.nodecache = &[24]node{}
-		b.ncached = len(*b.nodecache)
+	if b.nfree == 0 {
+		b.freelist = &[24]node{}
+		b.nfree = len(*b.freelist)
 	}
-	b.ncached--
-	n := &b.nodecache[b.ncached]
+	b.nfree--
+	n := &b.freelist[b.nfree]
 
 	*n = node{v, l, h}
 	b.inverse[*n] = n
@@ -187,6 +187,22 @@ func (d *Robdd) AnySat() map[boolean.Var]bool {
 		default:
 			assign[u.v] = false
 			u = u.lo
+		}
+	}
+}
+
+// Evaluate d using the assignment (variable->truth value mapping) assign.
+func (d *Robdd) Eval(assign func(boolean.Var) bool) bool {
+	for n := d.root; ; {
+		switch {
+		case n == &truenode:
+			return true
+		case n == &falsenode:
+			return false
+		case assign(n.v):
+			n = n.hi
+		default:
+			n = n.lo
 		}
 	}
 }
