@@ -28,6 +28,9 @@ const (
 type Builder struct {
 	nvars   int
 	inverse map[node]*node
+
+	nodecache *[24]node
+	ncached   int
 }
 
 func NewBuilder() *Builder {
@@ -156,9 +159,16 @@ func (b *Builder) mknode(v boolean.Var, l, h *node) *node {
 }
 
 func (b *Builder) newnode(v boolean.Var, l, h *node) *node {
-	n := node{v, l, h}
-	b.inverse[n] = &n
-	return &n
+	if b.ncached == 0 {
+		b.nodecache = &[24]node{}
+		b.ncached = len(*b.nodecache)
+	}
+	b.ncached--
+	n := &b.nodecache[b.ncached]
+
+	*n = node{v, l, h}
+	b.inverse[*n] = n
+	return n
 }
 
 // Returns an assignment of truth values to variables that satisfies d, or
